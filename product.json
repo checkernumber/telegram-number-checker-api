@@ -1,0 +1,63 @@
+{
+  "name": "Telegram Number Checker API",
+  "slug": "telegram-number-checker-api",
+  "description": "Bulk asynchronous file-based API used to verify whether phone numbers are registered on Telegram.",
+  "canonical_docs": "https://docs.checknumber.ai/telegram-bulk-number-checker",
+  "dashboard": "https://platform.checknumber.ai",
+  "base_url": "https://api.checknumber.ai",
+  "auth": {
+    "type": "api_key",
+    "header": "X-API-Key"
+  },
+  "endpoints": {
+    "create_task": {
+      "method": "POST",
+      "path": "/v1/tasks"
+    },
+    "get_task": {
+      "method": "POST",
+      "path": "/v1/gettasks"
+    },
+    "balance": {
+      "method": "GET",
+      "path": "/v1/balance"
+    }
+  },
+  "input": {
+    "file_format": "text; one E.164 phone number per line, or one email per line for email task types"
+  },
+  "result_fields": [
+    {
+      "field": "Number",
+      "description": "Phone number in E.164 format",
+      "example": "+41798284651"
+    },
+    {
+      "field": "telegram",
+      "description": "Whether number has active Telegram account",
+      "example": "yes, no"
+    }
+  ],
+  "products": [
+    {
+      "task_type": "tg",
+      "name": "Telegram Number Checker",
+      "doc_slug": "telegram-bulk-number-checker",
+      "input_kind": "phone"
+    },
+    {
+      "task_type": "tg_active",
+      "name": "Telegram Activity Checker",
+      "doc_slug": "telegram-activity-checker",
+      "input_kind": "phone"
+    },
+    {
+      "task_type": "tg_avatar",
+      "name": "Telegram Avatar Checker",
+      "doc_slug": "telegram-bulk-number-checker-avatar",
+      "input_kind": "phone"
+    }
+  ],
+  "pricing_url": "https://checknumber.ai/pricing",
+  "last_updated": "2026-07-13"
+}

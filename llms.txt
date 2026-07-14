@@ -1,0 +1,39 @@
+# Telegram Number Checker API
+
+> Official CheckNumber code examples for a bulk, asynchronous API used to verify whether phone numbers are registered on Telegram.
+
+Base URL: https://api.checknumber.ai
+Authentication: X-API-Key request header
+
+## Workflow
+
+1. Submit: POST https://api.checknumber.ai/v1/tasks with `file` and `task_type=tg`.
+2. Poll: POST https://api.checknumber.ai/v1/gettasks with `task_id`.
+3. Download: retrieve `result_url` after status becomes `exported`.
+
+## Variants
+
+- `task_type=tg` — Telegram Number Checker: https://docs.checknumber.ai/telegram-bulk-number-checker
+- `task_type=tg_active` — Telegram Activity Checker: https://docs.checknumber.ai/telegram-activity-checker
+- `task_type=tg_avatar` — Telegram Avatar Checker: https://docs.checknumber.ai/telegram-bulk-number-checker-avatar
+
+## Pricing
+
+Current terms: https://checknumber.ai/pricing
+Balance endpoint: GET https://api.checknumber.ai/v1/balance
+
+## Docs
+
+- Canonical documentation: https://docs.checknumber.ai/telegram-bulk-number-checker
+- Dashboard and API keys: https://platform.checknumber.ai
+
+## Code examples
+
+- examples/python
+- examples/nodejs
+- examples/go
+- examples/java
+- examples/csharp
+- examples/php
+- examples/javascript
+- examples/shell
