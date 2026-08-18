@@ -1,39 +1,26 @@
-# Telegram Number Checker API
+# CheckNumber Telegram Number Checker API
+> Official integration context generated from the checked API expansion manifest.
 
-> Official CheckNumber code examples for a bulk, asynchronous API used to verify whether phone numbers are registered on Telegram.
+## Canonical resources
+- [tg](https://docs.checknumber.ai/telegram-bulk-number-checker)
+- [tg_active](https://docs.checknumber.ai/telegram-activity-checker)
+- [tg_avatar](https://docs.checknumber.ai/telegram-bulk-number-checker-avatar)
 
-Base URL: https://api.checknumber.ai
-Authentication: X-API-Key request header
+## Contract facts
+- API base URL: https://api.checknumber.ai
+- Authentication: `X-API-Key` request header
+- API key environment variable: `CHECKNUMBER_API_KEY`
+- Processing mode: async_bulk
+- Current prices are not embedded; use the official pricing page.
 
-## Workflow
+## Products
+- `tg`: Number Checker · input `phone` · fields: number, activated
+- `tg_active`: Activity Checker · input `phone` · fields: number, activated, uid, username, lastseen, activedays, member
+- `tg_avatar`: Profile Checker · input `phone` · fields: Phone, activated, uid, username, Gender, Age, Ethnicity, Avatar, Last Online Time, Active Days, Is Member, first_name, last_name
 
-1. Submit: POST https://api.checknumber.ai/v1/tasks with `file` and `task_type=tg`.
-2. Poll: POST https://api.checknumber.ai/v1/gettasks with `task_id`.
-3. Download: retrieve `result_url` after status becomes `exported`.
+## Safety
+- Process only identifiers you are authorized to verify.
+- Do not expose API keys in browser code or commit secrets.
+- An undetermined result is not a confirmed negative.
 
-## Variants
-
-- `task_type=tg` — Telegram Number Checker: https://docs.checknumber.ai/telegram-bulk-number-checker
-- `task_type=tg_active` — Telegram Activity Checker: https://docs.checknumber.ai/telegram-activity-checker
-- `task_type=tg_avatar` — Telegram Avatar Checker: https://docs.checknumber.ai/telegram-bulk-number-checker-avatar
-
-## Pricing
-
-Current terms: https://checknumber.ai/pricing
-Balance endpoint: GET https://api.checknumber.ai/v1/balance
-
-## Docs
-
-- Canonical documentation: https://docs.checknumber.ai/telegram-bulk-number-checker
-- Dashboard and API keys: https://platform.checknumber.ai
-
-## Code examples
-
-- examples/python
-- examples/nodejs
-- examples/go
-- examples/java
-- examples/csharp
-- examples/php
-- examples/javascript
-- examples/shell
+Last reviewed: 2026-08-18.

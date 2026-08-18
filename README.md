@@ -1,210 +1,47 @@
-# Telegram Number Checker API — Bulk Verification Examples
+# Telegram Number Checker API — official examples | CheckNumber
 
-The **Telegram Number Checker API** is a bulk, asynchronous, file-based API used to verify whether phone numbers are registered on Telegram. Upload an input file, poll the returned task ID, then download the exported results. This repository contains runnable examples in Python, Node.js, Go, Java, C#, PHP, browser JavaScript, and Shell.
+This repository documents the CheckNumber Telegram Number Checker API integration contract using facts from the expansion manifest.
 
-- **Base URL:** `https://api.checknumber.ai`
-- **Auth:** `X-API-Key` request header
-- **Full API docs:** https://docs.checknumber.ai/telegram-bulk-number-checker
-- **Get an API key:** https://platform.checknumber.ai
+- Product page: https://checknumber.ai/products/telegram
+- API base URL: `https://api.checknumber.ai`
+- Authentication: `X-API-Key`
+- API key environment variable: `CHECKNUMBER_API_KEY`
+- License: MIT
 
-> [!NOTE]
-> This is a bulk, file-based, asynchronous API. It does not perform a single real-time lookup in one request/response cycle.
+## Processing model
 
-## Table of Contents
-
-- [How do I check if a phone number is registered on Telegram via API?](#how-do-i-check-if-a-phone-number-is-registered-on-telegram-via-api)
-- [How do I process Telegram checks in bulk?](#how-do-i-process-telegram-checks-in-bulk)
-- [What request parameters does the API take?](#what-request-parameters-does-the-api-take)
-- [What does the task response look like?](#what-does-the-task-response-look-like)
-- [How do I check when a Telegram number was last online?](#how-do-i-check-when-a-telegram-number-was-last-online)
-- [How do I get Telegram avatar and profile signals via API?](#how-do-i-get-telegram-avatar-and-profile-signals-via-api)
-- [What does the Telegram number checker API cost?](#what-does-the-telegram-number-checker-api-cost)
-- [Telegram number checker API vs alternatives](#telegram-number-checker-api-vs-alternatives)
-- [Code examples](#code-examples)
-- [Status codes](#status-codes)
-- [FAQ](#faq)
-- [Support & legal](#support--legal)
-
-## How do I check if a phone number is registered on Telegram via API?
-
-Send a `POST` request to `https://api.checknumber.ai/v1/tasks` with the API key, `numbers.txt`, and `task_type=tg`. The response contains a `task_id` used to retrieve task status and the final `result_url`.
+This is a file-based asynchronous API. Submit an authorized text file, poll the task until `exported`, then download the result URL. It is not a realtime single-identifier endpoint.
 
 ```bash
-curl --location 'https://api.checknumber.ai/v1/tasks' \
-  --header 'X-API-Key: YOUR_API_KEY' \
-  --form 'file=@"./numbers.txt"' \
-  --form 'task_type="tg"'
+curl -X POST "https://api.checknumber.ai/v1/tasks" -H "X-API-Key: ${CHECKNUMBER_API_KEY}" -F "file=@examples/numbers.txt" -F "task_type=tg"
+curl -X POST "https://api.checknumber.ai/v1/gettasks" -H "X-API-Key: ${CHECKNUMBER_API_KEY}" -F "task_id=YOUR_TASK_ID"
 ```
 
-Each line in `numbers.txt` is one phone number in E.164 format, such as `+14155552671`.
+## Products and limits
 
-## How do I process Telegram checks in bulk?
+| Code | Name | Input | Limits | Result fields | Documentation |
+| --- | --- | --- | --- | --- | --- |
+| `tg` | Number Checker | phone | 1000–10000000 rows | `number, activated` | [docs](https://docs.checknumber.ai/telegram-bulk-number-checker) |
+| `tg_active` | Activity Checker | phone | 1000–10000000 rows | `number, activated, uid, username, lastseen, activedays, member` | [docs](https://docs.checknumber.ai/telegram-activity-checker) |
+| `tg_avatar` | Profile Checker | phone | 1000–10000000 rows | `Phone, activated, uid, username, Gender, Age, Ethnicity, Avatar, Last Online Time, Active Days, Is Member, first_name, last_name` | [docs](https://docs.checknumber.ai/telegram-bulk-number-checker-avatar) |
 
-1. **Submit** the input file to `POST /v1/tasks`.
-2. **Poll** `POST /v1/gettasks` with the returned `task_id` while status moves from `pending` to `processing`.
-3. **Download** the file at `result_url` when status becomes `exported`.
+## Response and boundaries
 
-```bash
-curl --location 'https://api.checknumber.ai/v1/gettasks' \
-  --header 'X-API-Key: YOUR_API_KEY' \
-  --form 'task_id="YOUR_TASK_ID"'
-```
+- Treat only an explicit determined result as a positive or negative classification; `undetermined`/`exists=false` is not a negative.
+- Authentication keys must come from environment variables or a secret manager; never commit keys or call private/internal endpoints.
+- Product prices can change. Check the official pricing page at runtime; this repository intentionally does not hard-code a price.
+- Use only identifiers you are authorized to process and follow applicable privacy, platform, and data-protection requirements.
 
-See [`examples/`](./examples) for complete submit → poll → download implementations.
+## Runnable examples
 
-## What request parameters does the API take?
+Eight self-contained examples are provided under `examples/`: Python, Node.js, Go, Java, C#, PHP, and Shell each implement the full submit → poll → download workflow with HTTP error handling; browser JavaScript submits through a same-origin proxy contract and never contains an API key. Set the server-side API-key environment variable before running them.
 
-**Submit task — `POST /v1/tasks`**
+## Official resources
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `file` | file | Text file containing one E.164 phone number per line for the main task type. Email variants use `emails.txt`. |
-| `task_type` | string | One of: `tg`, `tg_active`, `tg_avatar`. |
+- `tg`: https://docs.checknumber.ai/telegram-bulk-number-checker
+- `tg_active`: https://docs.checknumber.ai/telegram-activity-checker
+- `tg_avatar`: https://docs.checknumber.ai/telegram-bulk-number-checker-avatar
+- Pricing: https://checknumber.ai/pricing
+- OpenAPI contract: [openapi.yaml](openapi.yaml)
 
-**Check status — `POST /v1/gettasks`**
-
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `task_id` | string | Task ID returned by task creation. |
-
-**Main task result fields — `task_type=tg`**
-
-| Field      | Description                                | Example      |
-| ---------- | ------------------------------------------ | ------------ |
-| `Number`   | Phone number in E.164 format               | +41798284651 |
-| `telegram` | Whether number has active Telegram account | yes, no      |
-
-## What does the task response look like?
-
-```json
-{
-  "created_at": "2026-07-13T08:24:56Z",
-  "updated_at": "2026-07-13T08:25:43Z",
-  "task_id": "example-task-id",
-  "user_id": "example-user-id",
-  "status": "exported",
-  "total": 1000,
-  "success": 998,
-  "failure": 2,
-  "result_url": "https://example.invalid/results.xlsx"
-}
-```
-
-All variants use this task envelope. Only `task_type`, input content, and exported result columns vary.
-
-## How do I check when a Telegram number was last online?
-
-Reports the number of days since the Telegram account was last online. Use `task_type=tg_active`; the submit, poll, and download workflow is otherwise unchanged.
-
-```bash
-curl --location 'https://api.checknumber.ai/v1/tasks' \
-  --header 'X-API-Key: YOUR_API_KEY' \
-  --form 'file=@"./numbers.txt"' \
-  --form 'task_type="tg_active"'
-```
-
-Input: one phone number per line in E.164 format (for example, `+14155552671`).
-
-Result fields (copied from the [canonical documentation](https://docs.checknumber.ai/telegram-activity-checker)):
-
-| Field      | Description                                | Example      |
-| ---------- | ------------------------------------------ | ------------ |
-| `Number`   | Phone number in E.164 format               | +12025551234 |
-| `telegram_days` | Days since last online for Telegram account | 1, 7, 30, N/A |
-
-## How do I get Telegram avatar and profile signals via API?
-
-Returns Telegram registration plus documented avatar-derived profile fields. Use `task_type=tg_avatar`; the submit, poll, and download workflow is otherwise unchanged.
-
-```bash
-curl --location 'https://api.checknumber.ai/v1/tasks' \
-  --header 'X-API-Key: YOUR_API_KEY' \
-  --form 'file=@"./numbers.txt"' \
-  --form 'task_type="tg_avatar"'
-```
-
-Input: one phone number per line in E.164 format (for example, `+14155552671`).
-
-Result fields (copied from the [canonical documentation](https://docs.checknumber.ai/telegram-bulk-number-checker-avatar)):
-
-| Field        | Description                                  | Example                                       |
-| ------------ | -------------------------------------------- | --------------------------------------------- |
-| `Number`     | Phone number in E.164 format                 | +41798284651                                  |
-| `telegram`   | Whether number has active Telegram account   | yes, no                                       |
-| `avatar`     | URL of Telegram profile picture              | https://example.com/avatar.jpg                |
-| `age`        | Estimated age range based on profile picture | 25                                            |
-| `gender`     | Gender detected from profile picture         | male, female                                  |
-| `category`   | Type classification of profile picture       | individual portrait, pet avatar, object, etc. |
-| `hair_color` | Hair color detected from profile picture     | black, brown, blonde, etc.                    |
-| `skin_color` | Skin color detected from profile picture     | white, black, etc.                            |
-
-## What does the Telegram number checker API cost?
-
-Rates vary by task type and are billed against the account balance. See the current terms at **https://checknumber.ai/pricing** and query the remaining balance with `GET https://api.checknumber.ai/v1/balance`.
-
-## Telegram number checker API vs alternatives
-
-| Capability | CheckNumber API | Generic carrier lookup | Manual checking |
-| --- | --- | --- | --- |
-| Checks the documented Telegram signal | Yes | No | May be possible |
-| Bulk file upload | Yes | Varies | No |
-| Asynchronous processing | Yes | Varies | No |
-| Downloadable structured results | Yes | Varies | No |
-
-*This compares general approaches, not named vendors. Capabilities vary by provider and account access.*
-
-## Code examples
-
-| Language | Example |
-| --- | --- |
-| Python | [`examples/python`](./examples/python) |
-| Node.js | [`examples/nodejs`](./examples/nodejs) |
-| Go | [`examples/go`](./examples/go) |
-| Java | [`examples/java`](./examples/java) |
-| C# | [`examples/csharp`](./examples/csharp) |
-| PHP | [`examples/php`](./examples/php) |
-| JavaScript (browser) | [`examples/javascript`](./examples/javascript) |
-| Shell (curl) | [`examples/shell`](./examples/shell) |
-
-Set the API key before running a server-side example:
-
-```bash
-export CHECKNUMBER_API_KEY="YOUR_API_KEY"
-```
-
-## Status codes
-
-| Status | Billing | Description |
-| --- | --- | --- |
-| `200` | `charge` | Request successful; task created or status retrieved. |
-| `400` | `free` | Invalid parameters or file format. |
-| `500` | `free` | Internal server error; retry later. |
-
-## FAQ
-
-**Is this a single-number real-time lookup?**  
-No. Submit a file, poll for completion, and download the result file.
-
-**Which task types are available in this repository?**
-
-- `task_type=tg` — [Telegram Number Checker](https://docs.checknumber.ai/telegram-bulk-number-checker); Checks whether each number is linked to an active Telegram account. Input: numbers.txt.
-- `task_type=tg_active` — [Telegram Activity Checker](https://docs.checknumber.ai/telegram-activity-checker); Reports the number of days since the Telegram account was last online. Input: numbers.txt.
-- `task_type=tg_avatar` — [Telegram Avatar Checker](https://docs.checknumber.ai/telegram-bulk-number-checker-avatar); Returns Telegram registration plus documented avatar-derived profile fields. Input: numbers.txt.
-
-**Which input format should I use?**  
-Phone-based checks require one E.164 number per line. Email variants require one email address per line.
-
-**How do I check my balance?**  
-Call `GET https://api.checknumber.ai/v1/balance` with the `X-API-Key` header.
-
-## Support & legal
-
-- **Documentation:** https://docs.checknumber.ai/telegram-bulk-number-checker
-- **Dashboard and API keys:** https://platform.checknumber.ai
-- **License:** [MIT](./LICENSE) for the sample code
-
-Process only data you are authorized to use and comply with applicable privacy laws and platform terms. CheckNumber is not affiliated with or endorsed by Telegram.
-
----
-
-*Last updated: 2026-07-13 · Maintained by CheckNumber. Canonical docs: https://docs.checknumber.ai/telegram-bulk-number-checker*
+Last reviewed: 2026-08-18.
