@@ -21,9 +21,9 @@ curl -X POST "https://api.checknumber.ai/v1/gettasks" -H "X-API-Key: ${CHECKNUMB
 
 | Code | Name | Input | Limits | Result fields | Documentation |
 | --- | --- | --- | --- | --- | --- |
-| `tg` | Number Checker | phone | 1000–10000000 rows | `number, activated` | [docs](https://docs.checknumber.ai/telegram-bulk-number-checker) |
-| `tg_active` | Activity Checker | phone | 1000–10000000 rows | `number, activated, uid, username, lastseen, activedays, member` | [docs](https://docs.checknumber.ai/telegram-activity-checker) |
-| `tg_avatar` | Profile Checker | phone | 1000–10000000 rows | `Phone, activated, uid, username, Gender, Age, Ethnicity, Avatar, Last Online Time, Active Days, Is Member, first_name, last_name` | [docs](https://docs.checknumber.ai/telegram-bulk-number-checker-avatar) |
+| `tg` | Number Checker | phone | 1–10,000,000 rows | `number, activated` | [docs](https://docs.checknumber.ai/telegram-bulk-number-checker) |
+| `tg_active` | Activity Checker | phone | 1–10,000,000 rows | `number, activated, uid, username, lastseen, activedays, member` | [docs](https://docs.checknumber.ai/telegram-activity-checker) |
+| `tg_avatar` | Profile Checker | phone | 1–10,000,000 rows | `Phone, activated, uid, username, Gender, Age, Ethnicity, Avatar, Last Online Time, Active Days, Is Member, first_name, last_name` | [docs](https://docs.checknumber.ai/telegram-bulk-number-checker-avatar) |
 
 ## Response and boundaries
 
@@ -44,4 +44,15 @@ Seven self-contained examples are provided under `examples/`: Python, Node.js, G
 - Pricing: https://checknumber.ai/pricing
 - OpenAPI contract: [openapi.yaml](openapi.yaml)
 
-Last reviewed: 2026-08-18.
+Last reviewed: 2026-10-30.
+
+
+## Upload and billing limits verified 2026-10-30
+
+| Task type | Minimum upload | Maximum upload | Minimum billable quantity |
+| --- | ---: | ---: | ---: |
+| `tg` | 1 | 10,000,000 | 500 |
+| `tg_active` | 1 | 10,000,000 | 500 |
+| `tg_avatar` | 1 | 10,000,000 | 1,000 |
+
+Upload minimum and minimum billable quantity are different. A smaller accepted upload can still be billed at the stated minimum. Zero means no billing floor. A wholly failed/unprocessed task is not charged a fabricated minimum. Check current account pricing before submitting.
